@@ -1,0 +1,54 @@
+Hello test location:
+http://localhost:5000/api/hello
+
+1. The User (You, in your browser) - The Hungry Customer
+What it is: This is you, sitting at your computer, looking at the web page.
+
+Role: You're the one who wants information (like "Show me delayed shipments" or "What's the average cost?").
+
+2. The Frontend (Your React.js Application) - The Waiter / Menu
+What it is: This is the react-app folder. It's the website you see in your browser (running at localhost:3000).
+
+Role:
+
+It's the User Interface (UI). It displays buttons, charts, tables, and filters.
+
+It's like the Waiter: When you want something (e.g., you click a filter or want to see a chart), the React app (the waiter) takes your order.
+
+It also displays the menu (the dashboard layout, charts, etc.) using libraries like Chart.js.
+
+Technologies: React.js, HTML, CSS, JavaScript, a charting library.
+
+3. The Backend (Your Flask API) - The Kitchen / Chef
+What it is: This is your app.py file, running on your server (at localhost:5000).
+
+Role:
+
+It's the "brain" or "worker" of your application.
+
+It's like the Kitchen and Chef: When the React app (waiter) brings an order (a request for data), the Flask API (chef) goes into the kitchen (does the work).
+
+It knows how to talk to the database to get the raw data.
+
+It processes the data (e.g., calculates averages, filters, sorts).
+
+It prepares the results in a format the waiter (React) understands (JSON).
+
+It sends these results back to the React app.
+
+CORS (Cross-Origin Resource Sharing): This is like a "permit" that allows your React app (Waiter) on localhost:3000 to talk to your Flask app (Chef) on localhost:5000, even though they are on different "addresses" (ports). Without it, they'd be blocked for security reasons.
+
+Flask-SocketIO: This is like a special communication channel for "live updates." Imagine if the kitchen could send a message to the waiter saying "new dish ready!" without the waiter having to ask. This is for real-time features.
+
+Technologies: Python, Flask, flask-cors, flask-socketio, azure-cosmos SDK.
+
+4. The Database (Azure Cosmos DB) - The Pantry / Ingredients
+What it is: This is your data store in the cloud (on Azure).
+
+Role:
+
+It's like the Pantry or Ingredients Storage: It holds all your raw logistics data (the 10,000 shipment records).
+
+It's designed to be super fast and scalable, so the Chef (Flask) can quickly get the ingredients (data) it needs.
+
+Technologies: Azure Cosmos DB (NoSQL API).

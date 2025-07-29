@@ -77,12 +77,24 @@ function App() {
       setTotalShipments(totalShipmentsRes.data.totalCount); // Assuming this endpoint returns totalCount
 
       // Fetch Total Delayed Shipments (for homepage overview)
-      // const delayedRes = await axios.get(`${API_BASE_URL}/analytics/total_delayed_shipments`);
-      // setTotalDelayedShipments(delayedRes.data.total_delayed_shipments);
+      const delayedRes = await axios.get(`${API_BASE_URL}/total_delayed`);
+      setTotalDelayedShipments(delayedRes.data.count);
 
       // Fetch Average Cost by Carrier (for homepage chart)
+      // Fetch Average Cost by Carrier (for homepage chart)
       const avgCostRes = await axios.get(`${API_BASE_URL}/average_shipment_by_carrier`);
-      setAvgCostByCarrierData(processAverageCostData(avgCostRes.data));
+
+      // --- THIS IS THE CRITICAL CHANGE: DECLARE THE VARIABLE ---
+      const processedAvgCostData = processAverageCostData(avgCostRes.data);
+      // --- END CRITICAL CHANGE ---
+
+      setAvgCostByCarrierData(processedAvgCostData); // Now use the declared variable
+
+      // --- These console.logs will now work ---
+      console.log('App.js DEBUG: Raw avgCostRes.data:', avgCostRes.data);
+      console.log('App.js DEBUG: Processed avgCostData for state:', processedAvgCostData);
+      console.log('App.js DEBUG: Type of processedAvgCostData:', typeof processedAvgCostData, 'Is array:', Array.isArray(processedAvgCostData));
+
 
       // Fetch Top 5 Most Expensive Shipments (for homepage chart)
       const top5Res = await axios.get(`${API_BASE_URL}/top_5_expensive`);

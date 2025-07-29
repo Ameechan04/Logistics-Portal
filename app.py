@@ -16,12 +16,12 @@ from azure.cosmos import CosmosClient, PartitionKey
 app = Flask(__name__)
 
 # --- CORS Configuration ---
-CORS(app, resources={r"/api/*": {"origins": ["http://localhost:3000"]}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001"]}})
 
 # --- Flask-SocketIO Configuration ---
 socketio = SocketIO(
     app,
-    cors_allowed_origins="http://localhost:3000",
+    cors_allowed_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001"],
     transports=["websocket", "polling"],
     async_mode="threading"
 )
@@ -134,6 +134,23 @@ def get_delayed_last_3_months():
 
     three_months_ago = (datetime.utcnow() - timedelta(days=90)).isoformat() + "Z"
     query = f"SELECT VALUE COUNT(1) FROM c WHERE c.DeliveryStatus = 'Delayed' AND c.ShipmentDate >= '{three_months_ago}'"
+    try:
+        count = list(container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        ))[0]
+        return jsonify({"count": count})
+    except Exception as e:
+        return jsonify({"error": f"Failed to query delayed shipments: {e}"}), 500
+
+
+@app.route('/api/total_delayed')
+def get_total_delayed():
+    container = initialize_cosmos_db()
+    if not container:
+        return jsonify({"error": "Cosmos DB not initialized. Check configuration."}), 500
+
+    query = f"SELECT VALUE COUNT(1) FROM c WHERE c.DeliveryStatus = 'Delayed'"
     try:
         count = list(container.query_items(
             query=query,

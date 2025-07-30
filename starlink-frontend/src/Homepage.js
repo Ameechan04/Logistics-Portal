@@ -4,7 +4,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 
-function HomePage({ totalShipments, totalDelayedShipments, avgCostByCarrierData, top5ExpensiveShipments }) {
+function HomePage({ totalShipments, totalDelayedShipments, avgCostByCarrierData, top5ExpensiveShipments, delayedPast3Months }) {
     const calculateOverallAverageCost = () => {
         if (!avgCostByCarrierData || avgCostByCarrierData.length === 0) return 'N/A';
         const totalCost = avgCostByCarrierData.reduce((sum, item) => sum + item.averageCost, 0);
@@ -70,6 +70,13 @@ function HomePage({ totalShipments, totalDelayedShipments, avgCostByCarrierData,
                             <p>No top 5 expensive shipments data available.</p>
                         )}
                     </div>
+                </div>
+                     {/* new card for delayed past 3 months */}
+                <div>
+                  <h3>delayed past 3 months</h3>
+                  <p>
+                    {delayedPast3Months !== null ? delayedPast3Months : 'n/a'}
+                  </p>
                 </div>
             </section>
         </div>

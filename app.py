@@ -130,10 +130,14 @@ def average_shipment_by_carrier():
 def get_delayed_last_3_months():
     container = initialize_cosmos_db()
     if not container:
-        return jsonify({"error": "Cosmos DB not initialized. Check configuration."}), 500
+        return jsonify({"error": "cosmos db not initialized. check configuration."}), 500
 
-    three_months_ago = (datetime.utcnow() - timedelta(days=90)).isoformat() + "Z"
-    query = f"SELECT VALUE COUNT(1) FROM c WHERE c.DeliveryStatus = 'Delayed' AND c.ShipmentDate >= '{three_months_ago}'"
+    # using 90 days as an approximation for 3 months
+    three_months_ago = datetime.utcnow() - timedelta(days=90)
+    three_months_ago_iso = three_months_ago.isoformat(timespec='seconds') + "Z"
+    print(three_months_ago_iso) #debug
+    query = f"select value count(1) from c where c.DeliveryStatus = 'Delayed' and c.ShipmentDate >= '{three_months_ago_iso}'"
+
     try:
         count = list(container.query_items(
             query=query,
@@ -141,7 +145,34 @@ def get_delayed_last_3_months():
         ))[0]
         return jsonify({"count": count})
     except Exception as e:
-        return jsonify({"error": f"Failed to query delayed shipments: {e}"}), 500
+        print(f"error querying delayed shipments past 3 months: {e}")
+        return jsonify({"error": f"failed to query delayed shipments past 3 months: {e}"}), 500
+
+
+#get unique carrier names
+@app.route('/api/unique_carriers')
+def get_unique_carriers():
+    container = initialize_cosmos_db()
+    if not container:
+        return jsonify({"error": "cosmos db not initialized. check configuration."}), 500
+
+    # cosmos db query to get distinct carrier names
+    # note: distinct on non-partition key properties can be expensive for large datasets
+    query = "select distinct value c.Carrier from c where is_defined(c.Carrier)"
+
+    try:
+        carriers = list(container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        ))
+        # filter out any None or empty string values that might come from the db
+        carriers = [c for c in carriers if c and isinstance(c, str)]
+        carriers.sort() # sort alphabetically for the dropdown
+        return jsonify(carriers)
+    except Exception as e:
+        print(f"error querying unique carriers: {e}")
+        return jsonify({"error": f"failed to query unique carriers: {e}"}), 500
+
 
 
 @app.route('/api/total_delayed')
@@ -261,38 +292,65 @@ def get_shipments_table():
     limit = int(request.args.get('limit', 10))
     offset = (page - 1) * limit
 
+    # get filter parameters
+    carrier = request.args.get('carrier')
+    status = request.args.get('status')
+    service_type = request.args.get('serviceType')
+
+    # get sort parameters from frontend request
+    sort_by = request.args.get('sortBy')
+    sort_order = request.args.get('sortOrder')  # 'asc' or 'desc'
+
+    # build where clause
     where_clauses = []
-    if request.args.get('carrier'):
-        where_clauses.append(f"c.Carrier = '{request.args['carrier']}'")
-    if request.args.get('status'):
-        where_clauses.append(f"c.DeliveryStatus = '{request.args['status']}'")
-    if request.args.get('serviceType'):
-        where_clauses.append(f"c.ServiceType = '{request.args['serviceType']}'")
+    if carrier:
+        where_clauses.append(f"c.Carrier = '{carrier}'")
+    if status:
+        where_clauses.append(f"c.DeliveryStatus = '{status}'")
+    if service_type:
+        where_clauses.append(f"c.ServiceType = '{service_type}'")
 
-    where_str = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
+    where_string = ""
+    if where_clauses:
+        where_string = " WHERE " + " and ".join(where_clauses)
 
-    query = f"SELECT * FROM c {where_str} OFFSET {offset} LIMIT {limit}"
+        # build order by clause
+    order_by_string = ""
+    if sort_by:
+        # validate sort_by to prevent injection (simple check for allowed columns)
+        # these must match the property names in your cosmos db documents
+        allowed_sort_columns = [
+            "ShipmentID", "Origin", "Destination", "Carrier", "DeliveryStatus",
+            "ServiceType", "WeightKG", "CostUSD", "ShipmentDate", "DeliveryDate", "Priority"
+        ]
+        if sort_by in allowed_sort_columns:
+            # default to ascending if sort_order is not 'desc'
+            order_direction = "asc" if sort_order == "asc" else "desc"
+            order_by_string = f" order by c.{sort_by} {order_direction}"
+        else:
+            # log or handle invalid sort_by column
+            print(f"warning: invalid sort_by column requested: {sort_by}")
+
+    # construct the full query
+    query = f"select * from c{where_string}{order_by_string} offset {offset} limit {limit}"
+    count_query = f"select value count(1) from c{where_string}"
     try:
+        # fetch paginated shipments
         shipments = list(container.query_items(
             query=query,
             enable_cross_partition_query=True
         ))
 
-        count_query = f"SELECT VALUE COUNT(1) FROM c {where_str}"
+        # fetch total count
         total_count = list(container.query_items(
             query=count_query,
             enable_cross_partition_query=True
         ))[0]
 
-        return jsonify({
-            "shipments": shipments,
-            "totalCount": total_count,
-            "page": page,
-            "limit": limit
-        })
+        return jsonify({"shipments": shipments, "totalCount": total_count})
     except Exception as e:
-        return jsonify({"error": f"Failed to query shipments for table view: {e}"}), 500
-
+        print(f"error querying shipments: {e}")
+        return jsonify({"error": f"failed to query shipments: {e}"}), 500
 
 #socket events:
 

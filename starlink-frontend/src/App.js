@@ -22,6 +22,8 @@ function App() {
   const [top5ExpensiveShipments, setTop5ExpensiveShipments] = useState([]);
   const [priorityDistributionData, setPriorityDistributionData] = useState([]);
   const [weightCostExpressCorrelation, setWeightCostExpressCorrelation] = useState([]);
+  const [uniqueCarriers, setUniqueCarriers] = useState([]);
+  const [delayedPast3Months, setDelayedPast3Months] = useState(null);
 
   // load and error states
   const [loading, setLoading] = useState(true);
@@ -65,51 +67,52 @@ function App() {
   };
 
   // fetch ALL data for dashboard
-  const fetchAllDashboardData = useCallback(async () => {
+    const fetchAllDashboardData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // fetch total shipments (no.)
-      const totalShipmentsRes = await axios.get(`${API_BASE_URL}/shipments`);
+      // create an array of all promises for api calls
+      const [
+        totalShipmentsRes,
+        delayedRes,
+        avgCostRes,
+        top5Res,
+        priorityDistRes,
+        correlationRes,
+        uniqueCarriersRes,
+          delayedPast3MonthsRes,
+      ] = await Promise.all([
+        axios.get(`${API_BASE_URL}/shipments`),
+        axios.get(`${API_BASE_URL}/total_delayed`),
+        axios.get(`${API_BASE_URL}/average_shipment_by_carrier`),
+        axios.get(`${API_BASE_URL}/top_5_expensive`),
+        axios.get(`${API_BASE_URL}/priority_distribution_by_status`),
+        axios.get(`${API_BASE_URL}/weight_cost_express_correlation`),
+        axios.get(`${API_BASE_URL}/unique_carriers`),
+        axios.get(`${API_BASE_URL}/delayed_last_3_months`),
+      ]);
+
+      // process and set state for each response
       setTotalShipments(totalShipmentsRes.data.totalCount);
-
-      // fetch total delayed shipments
-      const delayedRes = await axios.get(`${API_BASE_URL}/total_delayed`);
       setTotalDelayedShipments(delayedRes.data.count);
-
-      //fetch avg cost by carrier
-      const avgCostRes = await axios.get(`${API_BASE_URL}/average_shipment_by_carrier`);
+      setDelayedPast3Months(delayedPast3MonthsRes.data.count);
 
       const processedAvgCostData = processAverageCostData(avgCostRes.data);
-      
-
       setAvgCostByCarrierData(processedAvgCostData);
 
-      // todo remove logs
-      console.log('App.js DEBUG: Raw avgCostRes.data:', avgCostRes.data);
-      console.log('App.js DEBUG: Processed avgCostData for state:', processedAvgCostData);
-      console.log('App.js DEBUG: Type of processedAvgCostData:', typeof processedAvgCostData, 'Is array:', Array.isArray(processedAvgCostData));
-
-
-      // fetch top 5 most expensive (for homepage chart)
-      const top5Res = await axios.get(`${API_BASE_URL}/top_5_expensive`);
       setTop5ExpensiveShipments(top5Res.data);
-
-      // fetch priority dist. (for its own page)
-      const priorityDistRes = await axios.get(`${API_BASE_URL}/priority_distribution_by_status`);
       setPriorityDistributionData(processPriorityDistributionData(priorityDistRes.data));
-
-      // fetch weight / cost for express service (for its own page)
-      const correlationRes = await axios.get(`${API_BASE_URL}/weight_cost_express_correlation`);
       setWeightCostExpressCorrelation(correlationRes.data);
+      setUniqueCarriers(uniqueCarriersRes.data); // set unique carriers state
 
     } catch (err) {
-      console.error("Error fetching dashboard data:", err);
-      setError("Failed to load dashboard data. Please ensure your Flask backend is running and accessible.");
+      console.error("error fetching dashboard data:", err);
+      setError("failed to load dashboard data. please ensure your flask backend is running and accessible.");
     } finally {
       setLoading(false);
     }
   }, []);
+
 
   // useEffect is used to trigger initial data fetch
   useEffect(() => {
@@ -143,10 +146,11 @@ function App() {
                 totalDelayedShipments={totalDelayedShipments}
                 avgCostByCarrierData={avgCostByCarrierData}
                 top5ExpensiveShipments={top5ExpensiveShipments}
+                delayedPast3Months={delayedPast3Months}
             />
         );
       case 'shipments':
-        return <ShipmentsPage apiBaseUrl={API_BASE_URL} />; // ShipmentsPage fetches its own data with filters/pagination
+        return <ShipmentsPage apiBaseUrl={API_BASE_URL} uniqueCarriers={uniqueCarriers} />; // pass unique carriers as prop
       case 'priority':
         return <PriorityDistributionPage data={priorityDistributionData} />;
       case 'weight_cost':

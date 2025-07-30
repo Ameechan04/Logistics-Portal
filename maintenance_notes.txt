@@ -1,0 +1,4 @@
+Shipments Table:
+The Status' (delivered, in transit, delayed, cancelled) and Service Types are hardcoded to reduce number of database calls.
+Working on the assumption that future additions to the database will follow the pattern of the existing providers.
+The Carrier is not hardcoded allowing scope for future expansion in the database to cover more carrier providers.

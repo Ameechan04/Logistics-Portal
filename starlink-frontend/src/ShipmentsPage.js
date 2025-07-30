@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-function ShipmentsPage({ apiBaseUrl }) {
+function ShipmentsPage({ apiBaseUrl, uniqueCarriers }) {
     // state for shipments table
     const [shipments, setShipments] = useState([]);
     const [totalShipments, setTotalShipments] = useState(0);
@@ -179,13 +179,10 @@ function ShipmentsPage({ apiBaseUrl }) {
                             onChange={handleFilterChange}
                         >
                             <option value="All">all carriers</option>
-                            {/* these options should ideally come from a separate api call to get unique carriers */}
-                            <option value="Starlinks Express">starlinks express</option>
-                            <option value="Global Freight">global freight</option>
-                            <option value="Swift Logistics">swift logistics</option>
-                            <option value="RapidRoute">rapidroute</option>
-                            <option value="Pioneer Cargo">pioneer cargo</option>
-                            {/* add more carriers as needed from your data */}
+                          {/* dynamically render carrier options */}
+                          {uniqueCarriers.map((carrierName) => (
+                            <option key={carrierName} value={carrierName}>{carrierName}</option>
+                          ))}
                         </select>
                     </div>
 
@@ -296,7 +293,11 @@ function ShipmentsPage({ apiBaseUrl }) {
                                 <td>{shipment.WeightKG}</td>
                                 <td>${shipment.CostUSD?.toFixed(2)}</td>
                                 <td>{new Date(shipment.ShipmentDate).toLocaleDateString()}</td>
-                                <td>{new Date(shipment.DeliveryDate).toLocaleDateString()}</td>
+                                <td>
+                                    {shipment.DeliveryDate
+                                      ? new Date(shipment.DeliveryDate).toLocaleDateString()
+                                      : 'N/A'}
+                                </td>
                                 <td>{shipment.Priority}</td>
                             </tr>
                         ))}

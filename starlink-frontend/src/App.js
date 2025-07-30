@@ -1,24 +1,21 @@
 // frontend/src/App.js
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import './App.css'; // Ensure this CSS file exists and is linked
-
-// Import new page components
+import './App.css'; 
 import Navigation from './Navigation';
 import HomePage from './Homepage';
 import ShipmentsPage from './ShipmentsPage';
 import PriorityDistributionPage from './PriorityDistributionPage';
 import WeightCostCorrelationPage from './WeightCostPage';
 
-// Base URL for your Flask API
 const API_BASE_URL = 'http://localhost:5000/api';
 
-// --- Main App Component ---
+
 function App() {
-  // State to manage which page is currently displayed
+  // state for managing current page
   const [currentPage, setCurrentPage] = useState('home'); // 'home', 'shipments', 'priority', 'weight_cost'
 
-  // --- States for Data (fetched in App.js and passed down) ---
+  // states for data
   const [totalShipments, setTotalShipments] = useState(0);
   const [totalDelayedShipments, setTotalDelayedShipments] = useState(null);
   const [avgCostByCarrierData, setAvgCostByCarrierData] = useState([]);
@@ -26,11 +23,11 @@ function App() {
   const [priorityDistributionData, setPriorityDistributionData] = useState([]);
   const [weightCostExpressCorrelation, setWeightCostExpressCorrelation] = useState([]);
 
-  // --- Loading and Error States ---
+  // load and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- Helper function to process data for the "Average Cost by Carrier" chart ---
+  // average cost helper function
   const processAverageCostData = (data) => {
     if (!Array.isArray(data)) return [];
     return data.map(item => ({
@@ -39,7 +36,7 @@ function App() {
     }));
   };
 
-  // --- Helper function to process data for the "Priority Distribution by Status" chart ---
+  // helper function for priority distribution 
   const processPriorityDistributionData = (data) => {
     if (!Array.isArray(data)) return [];
 
@@ -67,44 +64,42 @@ function App() {
     return result;
   };
 
-  // --- Fetch ALL Data for Dashboard Overview & Charts ---
+  // fetch ALL data for dashboard
   const fetchAllDashboardData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch Total Shipments (for homepage overview)
+      // fetch total shipments (no.)
       const totalShipmentsRes = await axios.get(`${API_BASE_URL}/shipments`);
-      setTotalShipments(totalShipmentsRes.data.totalCount); // Assuming this endpoint returns totalCount
+      setTotalShipments(totalShipmentsRes.data.totalCount);
 
-      // Fetch Total Delayed Shipments (for homepage overview)
+      // fetch total delayed shipments
       const delayedRes = await axios.get(`${API_BASE_URL}/total_delayed`);
       setTotalDelayedShipments(delayedRes.data.count);
 
-      // Fetch Average Cost by Carrier (for homepage chart)
-      // Fetch Average Cost by Carrier (for homepage chart)
+      //fetch avg cost by carrier
       const avgCostRes = await axios.get(`${API_BASE_URL}/average_shipment_by_carrier`);
 
-      // --- THIS IS THE CRITICAL CHANGE: DECLARE THE VARIABLE ---
       const processedAvgCostData = processAverageCostData(avgCostRes.data);
-      // --- END CRITICAL CHANGE ---
+      
 
-      setAvgCostByCarrierData(processedAvgCostData); // Now use the declared variable
+      setAvgCostByCarrierData(processedAvgCostData);
 
-      // --- These console.logs will now work ---
+      // todo remove logs
       console.log('App.js DEBUG: Raw avgCostRes.data:', avgCostRes.data);
       console.log('App.js DEBUG: Processed avgCostData for state:', processedAvgCostData);
       console.log('App.js DEBUG: Type of processedAvgCostData:', typeof processedAvgCostData, 'Is array:', Array.isArray(processedAvgCostData));
 
 
-      // Fetch Top 5 Most Expensive Shipments (for homepage chart)
+      // fetch top 5 most expensive (for homepage chart)
       const top5Res = await axios.get(`${API_BASE_URL}/top_5_expensive`);
       setTop5ExpensiveShipments(top5Res.data);
 
-      // Fetch Priority Distribution by Status (for dedicated page)
+      // fetch priority dist. (for its own page)
       const priorityDistRes = await axios.get(`${API_BASE_URL}/priority_distribution_by_status`);
       setPriorityDistributionData(processPriorityDistributionData(priorityDistRes.data));
 
-      // Fetch Weight vs. Cost for Express Service (for dedicated page)
+      // fetch weight / cost for express service (for its own page)
       const correlationRes = await axios.get(`${API_BASE_URL}/weight_cost_express_correlation`);
       setWeightCostExpressCorrelation(correlationRes.data);
 
@@ -116,12 +111,12 @@ function App() {
     }
   }, []);
 
-  // --- useEffect to trigger initial data fetch ---
+  // useEffect is used to trigger initial data fetch
   useEffect(() => {
     fetchAllDashboardData();
   }, [fetchAllDashboardData]);
 
-  // --- Render Loading/Error States ---
+  // render load/error states
   if (loading) {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -138,7 +133,7 @@ function App() {
     );
   }
 
-  // --- Render Current Page based on `currentPage` state ---
+  // render current page based on `currentPage` state
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
@@ -168,10 +163,10 @@ function App() {
           <p className="text-gray-600">Welcome to the Starlinks Global Logistics Portal Dashboard</p>
         </header>
 
-        {/* Navigation Component */}
+        {/* nav component */}
         <Navigation setCurrentPage={setCurrentPage} />
 
-        {/* Render the selected page */}
+        {/* render selected page */}
         <main className="mt-8">
           {renderPage()}
         </main>

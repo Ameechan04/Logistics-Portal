@@ -11,12 +11,8 @@ function HomePage({ totalShipments, totalDelayedShipments, avgCostByCarrierData,
         return `$${(totalCost / avgCostByCarrierData.length).toFixed(2)}`;
     };
 
-
-    console.log('HomePage DEBUG: Received avgCostByCarrierData prop:', avgCostByCarrierData);
-    console.log('HomePage DEBUG: avgCostByCarrierData length:', avgCostByCarrierData ? avgCostByCarrierData.length : 'N/A');
-
     return (
-        <div className="space-y-8">
+        <div>
             {/* overview:  */}
             <section>
                 <div>

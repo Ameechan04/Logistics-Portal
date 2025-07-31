@@ -1,0 +1,95 @@
+#overviewMetricsSection {
+    /*display: flex;*/
+    color: #58595b;
+    background-color: #f0f0f0;
+  flex-wrap: wrap; /* allows items to wrap to the next line on smaller screens */
+  justify-content: center; /* centers the buttons horizontally */
+  gap: 25px; /* adds space between the buttons */
+  list-style: none; /* removes any default list styling (bullets) */
+  padding: 4vh; /* removes default padding */
+  margin: 0; /* removes default margin */
+display: grid;
+  grid-template-columns: 1fr; /* Default to 1 column on very small screens */
+}
+
+.metricsList {
+  padding: 10px 15px;
+  border: 0px solid #faa633;
+  border-radius: 5px;
+  background-color: #e1e0e0;
+  color: #58595b;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+
+}
+
+.metricsList:hover {
+  scale: 1.05;
+  background-color: #c5c1c1;
+}
+
+#averageContainer {
+  padding-bottom: 50px;
+}
+
+
+
+#percentageContainer {
+  display: flex; /* Make it a flex container */
+  flex-direction: column; /* Arrange children vertically */
+  justify-content: space-between; /* Push content to top and bottom */
+  height: 95%; /* Ensure the div has a defined height for space-between to work */
+  /* You might already have other styles for .metricsList, keep them */
+
+}
+
+.navigation-list button:hover {
+  background-color: rgba(250, 166, 51, 0.44);
+}
+
+
+
+
+
+/* For screens 600px wide and up, display 2 columns */
+@media (min-width: 600px) {
+  #overviewMetricsSection {
+    grid-template-columns: repeat(2, 1fr); /* At most 2 columns */
+  }
+}
+
+.percentageDelayed {
+  padding: 5vh 0 0 0;
+  font-size: 5vh;
+  color: #F44336;
+  margin: 0;
+}
+
+.top-expensive-table-container table {
+  width: 90%; /* Adjust width as desired, e.g., 90% of its parent container */
+  margin-left: auto; /* Automatically calculates left margin */
+  margin-right: auto; /* Automatically calculates right margin, centering the table */
+  /* Keep any other existing table styles like borders, padding, etc. */
+  column-gap: 20px;
+}
+
+.top-expensive-table-container tbody tr:nth-child(odd) {
+  background-color: #f2f2f2; /* A light grey for even rows */
+}
+
+.top-expensive-table-container table {
+  border-collapse: collapse; /* This is crucial for seamless borders */
+  /* You might also want to remove any border on the table itself if present */
+  border: none;
+}
+
+.top-expensive-table-container table td {
+  padding: 2px;
+}
+
+#companyDisplayed {
+  text-align: center;
+  display: block;
+}

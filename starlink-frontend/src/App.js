@@ -1,7 +1,7 @@
 // frontend/src/App.js
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import './App.css'; 
+import './Styles/App.css';
 import Navigation from './Navigation';
 import HomePage from './Homepage';
 import ShipmentsPage from './ShipmentsPage';
@@ -24,6 +24,7 @@ function App() {
   const [weightCostExpressCorrelation, setWeightCostExpressCorrelation] = useState([]);
   const [uniqueCarriers, setUniqueCarriers] = useState([]);
   const [delayedPast3Months, setDelayedPast3Months] = useState(null);
+  const [ordersPast3Months, setOrdersPast3Months] = useState(null);
 
   // load and error states
   const [loading, setLoading] = useState(true);
@@ -38,7 +39,7 @@ function App() {
     }));
   };
 
-  // helper function for priority distribution 
+  // helper function for priority distribution
   const processPriorityDistributionData = (data) => {
     if (!Array.isArray(data)) return [];
 
@@ -81,6 +82,7 @@ function App() {
         correlationRes,
         uniqueCarriersRes,
           delayedPast3MonthsRes,
+          ordersPast3MonthsRes,
       ] = await Promise.all([
         axios.get(`${API_BASE_URL}/shipments`),
         axios.get(`${API_BASE_URL}/total_delayed`),
@@ -90,12 +92,14 @@ function App() {
         axios.get(`${API_BASE_URL}/weight_cost_express_correlation`),
         axios.get(`${API_BASE_URL}/unique_carriers`),
         axios.get(`${API_BASE_URL}/delayed_last_3_months`),
+        axios.get(`${API_BASE_URL}/orders_last_3_months`),
       ]);
 
       // process and set state for each response
       setTotalShipments(totalShipmentsRes.data.totalCount);
       setTotalDelayedShipments(delayedRes.data.count);
       setDelayedPast3Months(delayedPast3MonthsRes.data.count);
+      setOrdersPast3Months(ordersPast3MonthsRes.data.count);
 
       const processedAvgCostData = processAverageCostData(avgCostRes.data);
       setAvgCostByCarrierData(processedAvgCostData);
@@ -147,6 +151,7 @@ function App() {
                 avgCostByCarrierData={avgCostByCarrierData}
                 top5ExpensiveShipments={top5ExpensiveShipments}
                 delayedPast3Months={delayedPast3Months}
+                ordersPast3Months={ordersPast3Months}
             />
         );
       case 'shipments':
@@ -161,15 +166,15 @@ function App() {
   };
 
   return (
-      <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8 font-inter">
-        <header className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-blue-800">Starlinks Global Logistics Portal</h1>
-          <p className="text-gray-600">Welcome to the Starlinks Global Logistics Portal Dashboard</p>
-        </header>
+      <div>
+        <header>
+          <h1 className="titleText">Starlinks Global Logistics Portal</h1>
+          <p className="welcomeText">Welcome to the Starlinks Global Logistics Portal Dashboard</p>
+
 
         {/* nav component */}
         <Navigation setCurrentPage={setCurrentPage} />
-
+        </header>
         {/* render selected page */}
         <main className="mt-8">
           {renderPage()}

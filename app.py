@@ -148,6 +148,27 @@ def get_delayed_last_3_months():
         print(f"error querying delayed shipments past 3 months: {e}")
         return jsonify({"error": f"failed to query delayed shipments past 3 months: {e}"}), 500
 
+@app.route('/api/orders_last_3_months')
+def get_orders_last_3_months():
+    container = initialize_cosmos_db()
+    if not container:
+        return jsonify({"error": "cosmos db not initialized. check configuration."}), 500
+
+    # using 90 days as an approximation for 3 months
+    three_months_ago = datetime.utcnow() - timedelta(days=90)
+    three_months_ago_iso = three_months_ago.isoformat(timespec='seconds') + "Z"
+    query = f"select value count(1) from c where c.ShipmentDate >= '{three_months_ago_iso}'"
+
+    try:
+        count = list(container.query_items(
+            query=query,
+            enable_cross_partition_query=True
+        ))[0]
+        return jsonify({"count": count})
+    except Exception as e:
+        print(f"error querying shipments from the past 3 months: {e}")
+        return jsonify({"error": f"failed to query shipments from the past 3 months: {e}"}), 500
+
 
 #get unique carrier names
 @app.route('/api/unique_carriers')
@@ -199,7 +220,7 @@ def get_top_5_expensive():
         return jsonify({"error": "Cosmos DB not initialized. Check configuration."}), 500
 
     # This is the optimal query for 'Top 5 expensive'
-    query = "SELECT TOP 5 c.ShipmentID, c.CostUSD, c.Carrier FROM c ORDER BY c.CostUSD DESC"
+    query = "SELECT TOP 5 * FROM c ORDER BY c.CostUSD DESC"
     try:
         items = list(container.query_items(
             query=query,

@@ -1,0 +1,27 @@
+/* In frontend/src/App.css or frontend/src/Navigation.css */
+
+.navigation-list {
+  display: flex;
+  flex-wrap: wrap; /* allows items to wrap to the next line on smaller screens */
+  justify-content: center; /* centers the buttons horizontally */
+  gap: 20px; /* adds space between the buttons */
+  list-style: none; /* removes any default list styling (bullets) */
+  padding: 0; /* removes default padding */
+  margin: 0; /* removes default margin */
+}
+
+/* Optional: Basic styling for the buttons themselves */
+.navigation-list button {
+  padding: 10px 15px;
+  border: 0px solid #faa633;
+  border-radius: 5px;
+  background-color: #faa633;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.navigation-list button:hover {
+  background-color: rgba(250, 166, 51, 0.44);
+}

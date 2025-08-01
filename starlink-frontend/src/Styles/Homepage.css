@@ -1,15 +1,18 @@
+body {
+    background-color: #f0f0f0;
+}
+
 #overviewMetricsSection {
-    /*display: flex;*/
     color: #58595b;
     background-color: #f0f0f0;
-  flex-wrap: wrap; /* allows items to wrap to the next line on smaller screens */
-  justify-content: center; /* centers the buttons horizontally */
-  gap: 25px; /* adds space between the buttons */
-  list-style: none; /* removes any default list styling (bullets) */
-  padding: 4vh; /* removes default padding */
-  margin: 0; /* removes default margin */
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  list-style: none;
+  padding: 4vh;
+  margin: 0;
 display: grid;
-  grid-template-columns: 1fr; /* Default to 1 column on very small screens */
+  grid-template-columns: 1fr;
 }
 
 .metricsList {
@@ -21,6 +24,8 @@ display: grid;
   text-decoration: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
 
 
 }
@@ -37,11 +42,11 @@ display: grid;
 
 
 #percentageContainer {
-  display: flex; /* Make it a flex container */
-  flex-direction: column; /* Arrange children vertically */
-  justify-content: space-between; /* Push content to top and bottom */
-  height: 95%; /* Ensure the div has a defined height for space-between to work */
-  /* You might already have other styles for .metricsList, keep them */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 95%;
+
 
 }
 
@@ -53,10 +58,10 @@ display: grid;
 
 
 
-/* For screens 600px wide and up, display 2 columns */
+
 @media (min-width: 600px) {
   #overviewMetricsSection {
-    grid-template-columns: repeat(2, 1fr); /* At most 2 columns */
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -68,20 +73,22 @@ display: grid;
 }
 
 .top-expensive-table-container table {
-  width: 90%; /* Adjust width as desired, e.g., 90% of its parent container */
-  margin-left: auto; /* Automatically calculates left margin */
-  margin-right: auto; /* Automatically calculates right margin, centering the table */
-  /* Keep any other existing table styles like borders, padding, etc. */
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
   column-gap: 20px;
+    border-collapse: collapse;
+
 }
 
 .top-expensive-table-container tbody tr:nth-child(odd) {
-  background-color: #f2f2f2; /* A light grey for even rows */
+  background-color: #f9f9f9;
 }
 
+
+
 .top-expensive-table-container table {
-  border-collapse: collapse; /* This is crucial for seamless borders */
-  /* You might also want to remove any border on the table itself if present */
+  border-collapse: collapse;
   border: none;
 }
 
@@ -92,4 +99,74 @@ display: grid;
 #companyDisplayed {
   text-align: center;
   display: block;
+  color: #58595b;
+}
+
+
+#filterControlsHomepage {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1vh;
+}
+
+.filterList {
+  padding: 0 1vw 0 1vw;
+}
+
+
+#filterControlsHomepage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 80%;
+  margin: 2rem auto 10px;
+}
+
+#filterControlsHomepage div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#filterControlsHomepage label {
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+#filterControlsHomepage select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #f7f9fc;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 30px 10px 15px;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+
+#filterControlsHomepage select:hover {
+  border-color: #888;
+  background-color: #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#filterControlsHomepage select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }

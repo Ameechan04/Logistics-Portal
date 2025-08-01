@@ -1,14 +1,18 @@
-// frontend/src/ShipmentsPage.js
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import './Styles/Shipments.css';
 
-function ShipmentsPage({ apiBaseUrl, uniqueCarriers }) {
+
+function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
     // state for shipments table
     const [shipments, setShipments] = useState([]);
     const [totalShipments, setTotalShipments] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10); // default pagination limit
+    const [itemsPerPage, setItemsPerPage] = useState(15); // default pagination limit
     const [goToPageInput, setGoToPageInput] = useState(''); // state for the page jump input
+
+    // state for unique carriers, fetched locally within this component
+    const [uniqueCarriers, setUniqueCarriers] = useState([]);
 
     // state for filters and sorting
     const [filters, setFilters] = useState({
@@ -44,7 +48,22 @@ function ShipmentsPage({ apiBaseUrl, uniqueCarriers }) {
         }
     }, [currentPage, itemsPerPage, filters, apiBaseUrl]); // dependencies for useCallback
 
-    // useeffect hook to trigger data fetching
+    // New useEffect to fetch unique carriers once on component mount
+    useEffect(() => {
+        const fetchUniqueCarriers = async () => {
+            try {
+                const response = await axios.get(`${apiBaseUrl}/unique_carriers`);
+                setUniqueCarriers(response.data);
+            } catch (err) {
+                console.error("Error fetching unique carriers:", err);
+                // Set an error state or handle this gracefully if necessary
+            }
+        };
+
+        fetchUniqueCarriers();
+    }, [apiBaseUrl]); // Fetch only when apiBaseUrl changes
+
+    // useeffect hook to trigger data fetching for shipments
     useEffect(() => {
         fetchShipments();
     }, [fetchShipments]); // re-fetch table data when filters/pagination change
@@ -156,7 +175,14 @@ function ShipmentsPage({ apiBaseUrl, uniqueCarriers }) {
 
 
     if (loading) {
-        return <p>loading shipments...</p>;
+        return (
+            <div className="shipments-container p-4">
+                <div id="filterControls">
+                    <p id="loadingText">Loading Shipments...</p>
+                </div>
+
+            </div>
+        );
     }
 
     if (error) {
@@ -166,9 +192,7 @@ function ShipmentsPage({ apiBaseUrl, uniqueCarriers }) {
     return (
         <div>
             {/* filters and sorting section */}
-            <section>
-                <h2>filters & sorting</h2>
-                <div> {/* adjusted grid for more columns */}
+            <div id="filterControls">
                     {/* carrier filter */}
                     <div>
                         <label htmlFor="carrierFilter">carrier:</label>
@@ -258,13 +282,11 @@ function ShipmentsPage({ apiBaseUrl, uniqueCarriers }) {
                             <option value="desc">descending</option>
                         </select>
                     </div>
-                </div>
-            </section>
+            </div>
 
             {/* table view section */}
             <section>
-                <h2>shipment details</h2>
-                <div>
+                <div className="shipment-table-container">
                     <table>
                         <thead>
                         <tr>
@@ -310,31 +332,29 @@ function ShipmentsPage({ apiBaseUrl, uniqueCarriers }) {
                     </table>
                 </div>
 
-                {/* pagination controls */}
+                {/* page controls */}
                 <nav>
-                    <div> {/* combined for better alignment */}
+                    <div>
                         {/* page info */}
-                        <div>
+                        <div id = "pageNumberSection">
                             showing <span>{(currentPage - 1) * itemsPerPage + 1}</span> to <span>{Math.min(currentPage * itemsPerPage, totalShipments)}</span> of{' '}
                             <span>{totalShipments}</span> results
                         </div>
 
                         {/* pagination buttons */}
-                        <div>
+                        <div id="pageButtons">
                             {/* previous button */}
                             <button
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
-                                // apply px-4 py-2 for consistent padding with text
+                                className="arrowButtons"
                             >
-                                {/* svg icon with right margin */}
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
-                                previous {/* visible text */}
+                                previous
                             </button>
 
-                            {/* page numbers with ellipsis */}
                             {displayedPageNumbers.map((page, index) => (
                                 page === '...' ? (
                                     <span key={index}>...</span>
@@ -351,20 +371,19 @@ function ShipmentsPage({ apiBaseUrl, uniqueCarriers }) {
 
                             {/* next button */}
                             <button
+                                className="arrowButtons"
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
-                                // apply px-4 py-2 for consistent padding with text
                             >
-                                next {/* visible text */}
-                                {/* svg icon with left margin */}
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                                 </svg>
+                                next
                             </button>
                         </div>
 
                         {/* go to page input */}
-                        <div>
+                        <div id = "pageInputSection">
                             <label htmlFor="goToPage">go to page</label>
                             <input
                                 type="number"

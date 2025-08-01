@@ -1,0 +1,209 @@
+.shipment-table-container {
+  overflow-x: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.shipment-table-container table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+}
+
+.shipment-table-container table thead {
+  background-color: rgb(165, 161, 161);
+  color: white;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.shipment-table-container table th {
+  text-align: left;
+  padding: 0.5rem 0.1rem;
+  font-weight: 600;
+  overflow: hidden;
+}
+
+.shipment-table-container table td {
+  padding: 0.1rem;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+.shipment-table-container table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.shipment-table-container table tbody tr:hover {
+  background-color: #e6f7ff;
+  cursor: pointer;
+}
+
+.shipment-table-container table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+#filterControls {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1vh;
+}
+
+.filterList {
+  padding: 0 1vw 0 1vw;
+}
+
+
+#filterControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 55%;
+  margin: 10px auto 10px;
+}
+
+
+
+#filterControls label {
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+#filterControls select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #f7f9fc;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 30px 10px 15px;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+
+#filterControls select:hover {
+  border-color: #888;
+  background-color: #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#filterControls select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+#pageNumberSection {
+  display: block;
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  color: #58595b;
+}
+
+#pageButtons {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  padding: 1.5rem;
+  color: #58595b;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.arrowButtons {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  gap: 0.5rem;
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.arrowButtons:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+.arrowButtons:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#pageButtons button:not(.arrowButtons) {
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#pageButtons button:not(.arrowButtons):hover {
+  background-color: #f0f0f0;
+}
+
+#pageButtons button[aria-current="page"] {
+  background-color: #004d40;
+  color: white;
+  border-color: #004d40;
+}
+
+.arrowButtons svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+#pageInputSection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  color: #58595b;
+}
+
+#pageInputSection label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+#pageInputSection input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  width: 80px;
+  text-align: center;
+}
+
+#pageInputSection input:focus {
+  outline: none;
+  border-color: #004d40;
+  box-shadow: 0 0 0 2px rgba(0, 77, 64, 0.2);
+}
+
+#pageInputSection input::placeholder {
+  color: #999;
+}
+
+#loadingText {
+  color: #a5a1a1;
+}

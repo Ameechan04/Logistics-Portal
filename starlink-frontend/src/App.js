@@ -1,29 +1,34 @@
-// frontend/src/App.js
-
 import React, { useState } from 'react';
 import './Styles/App.css';
 import Navigation from './Navigation';
-import Homepage from './Homepage'; // Corrected import
+import Homepage from './Homepage';
 import ShipmentsPage from './ShipmentsPage';
+// Import the new pages
+import PriorityDistributionPage from './PriorityDistributionPage';
+import WeightCostPage from './WeightCostPage';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
 
 function App() {
-  // State for managing the current page. We now only have 'homepage' and 'shipments'.
+  // The currentPage state now has more possible values.
   const [currentPage, setCurrentPage] = useState('homepage');
 
-  // render current page based on `currentPage` state
+  // Renders the correct page based on the `currentPage` state.
   const renderPage = () => {
     switch (currentPage) {
       case 'homepage':
-        // The Homepage component is now self-contained and fetches its own data
         return <Homepage />;
       case 'shipments':
-        // ShipmentsPage still needs the API base URL for its filters
         return <ShipmentsPage apiBaseUrl={API_BASE_URL} />;
+      case 'priority':
+        // Render the PriorityDistributionPage
+        return <PriorityDistributionPage apiBaseUrl={API_BASE_URL} />;
+      case 'weightcost':
+        // Render the WeightCostPage
+        return <WeightCostPage apiBaseUrl={API_BASE_URL} />;
       default:
-        // Fallback to the homepage
+        // Fallback to the homepage if the state is unexpected
         return <Homepage />;
     }
   };
@@ -34,11 +39,9 @@ function App() {
           <h1 className="titleText">Starlinks Global Logistics Portal</h1>
           <p className="welcomeText">Welcome to the Starlinks Global Logistics Portal Dashboard</p>
 
-        {/* Navigation component */}
         <Navigation setCurrentPage={setCurrentPage} />
         </header>
 
-        {/* Render selected page */}
         <main className="mt-8">
           {renderPage()}
         </main>

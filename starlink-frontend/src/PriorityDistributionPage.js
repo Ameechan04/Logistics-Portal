@@ -16,15 +16,14 @@ function PriorityDistributionPage({ apiBaseUrl }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Define colors for each priority level for consistent visualization
   const colors = {
-    "High": "#ef4444", // a shade of red for high priority
-    "Medium": "#f97316", // a shade of orange for medium priority
-    "Low": "#22c55e" // a shade of green for low priority
+    "High": "#ef4444",
+    "Medium": "#f97316",
+    "Low": "#22c55e"
   };
 
-  // Helper function to transform the API response data for Recharts
-  const processApiData = (apiData) => {
+  // helper
+  const apiDataHelper = (apiData) => {
     const statusMap = {};
     apiData.forEach(item => {
       const status = item.DeliveryStatus;
@@ -41,31 +40,29 @@ function PriorityDistributionPage({ apiBaseUrl }) {
     return Object.values(statusMap);
   };
 
-  // Helper function to get data for a specific status from the main data array.
+  // helper function to get data for a specific status
   const getStatusData = (statusName) => {
     return data.find(item => item.status === statusName) || { High: 0, Medium: 0, Low: 0 };
   };
 
-  // Helper function to format data for pie charts
+  // helper function to format data for pie charts
   const getPieData = (statusName) => {
     const statusData = getStatusData(statusName);
     return [
       { name: 'High', value: statusData.High },
       { name: 'Medium', value: statusData.Medium },
       { name: 'Low', value: statusData.Low },
-    ].filter(entry => entry.value > 0); // Filter out entries with zero value for cleaner charts
+    ].filter(entry => entry.value > 0); // filters 0 results
   };
 
-  // Custom formatter function for the Pie Chart Legend
   const renderColorfulLegendText = (value, entry) => {
     const { payload } = entry;
     const displayValue = payload && payload.value !== undefined ? ` (${payload.value})` : '';
     return <span style={{ color: entry.color }}>{`${value}${displayValue}`}</span>;
   };
 
-  // --- Data Fetching Hooks ---
 
-  // 1. useEffect to fetch unique carriers on initial load (only once)
+  // 1. useEffect to fetch unique carriers on initial load (once)
   useEffect(() => {
     const fetchUniqueCarriers = async () => {
       try {
@@ -79,13 +76,13 @@ function PriorityDistributionPage({ apiBaseUrl }) {
     fetchUniqueCarriers();
   }, [apiBaseUrl]);
 
-  // 2. useEffect to fetch chart data whenever the selectedCarrier changes
+  // 2. useEffect to fetch chart data whenever the carrier changes
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Construct the URL with the selected carrier as a query parameter
+
         const url = selectedCarrier === 'All'
           ? `${apiBaseUrl}/priority_distribution_by_status`
           : `${apiBaseUrl}/priority_distribution_by_status?carrier=${encodeURIComponent(selectedCarrier.trim())}`;
@@ -95,7 +92,7 @@ function PriorityDistributionPage({ apiBaseUrl }) {
 
         if (response.ok) {
           // Process the received data directly
-          const processedData = processApiData(result);
+          const processedData = apiDataHelper(result);
           setData(processedData);
         } else {
           console.error('API Error:', result.error);
@@ -111,20 +108,17 @@ function PriorityDistributionPage({ apiBaseUrl }) {
       }
     };
     fetchData();
-  }, [selectedCarrier, apiBaseUrl]); // Re-run effect when selectedCarrier or apiBaseUrl changes
+  }, [selectedCarrier, apiBaseUrl]); // is rerun when data is filtered
 
-  // --- Event Handlers ---
   const handleFilterChange = (e) => {
     setSelectedCarrier(e.target.value);
   };
 
-  // Prepare data for each of the four pie charts
   const deliveredPieData = getPieData("Delivered");
   const delayedPieData = getPieData("Delayed");
   const inTransitPieData = getPieData("In Transit");
   const cancelledPieData = getPieData("Cancelled");
 
-  // Filter data for each specific status for the smaller charts
   const deliveredData = [getStatusData("Delivered")];
   const delayedData = [getStatusData("Delayed")];
   const inTransitData = [getStatusData("In Transit")];
@@ -190,7 +184,7 @@ function PriorityDistributionPage({ apiBaseUrl }) {
         <p style={{ textAlign: 'center', color: '#6b7280', marginTop: '2rem' }}>No priority distribution data available for the selected carrier.</p>
       ) : (
       <>
-        {/* Main stacked bar chart */}
+        {/* top left main bar chart */}
         <div id ="topSectionDiv">
           <div id="topLeftDiv">
             <h2 id="headTitle">Distribution of Shipment Priority by Delivery Status</h2>
@@ -250,7 +244,7 @@ function PriorityDistributionPage({ apiBaseUrl }) {
               </ResponsiveContainer>
             </div>
 
-            {/* pie chart for in transit shipments */}
+            {/* 3. pie chart for in transit shipments */}
             <div className="pieChartContainer">
               <h3 className="pieChartTitle">In-Transit Shipments by Priority</h3>
               <ResponsiveContainer width="100%" height={180}>
@@ -266,7 +260,7 @@ function PriorityDistributionPage({ apiBaseUrl }) {
               </ResponsiveContainer>
             </div>
 
-            {/* pie for cancelled shipments */}
+            {/* 4. pie for cancelled shipments */}
             <div className="pieChartContainer">
               <h3 className="pieChartTitle">Cancelled Shipments by Priority</h3>
               <ResponsiveContainer width="100%" height={180}>
@@ -286,7 +280,7 @@ function PriorityDistributionPage({ apiBaseUrl }) {
 
         {/* smaller individual bar charts for each status */}
         <div id="lineGraphsDiv">
-          {/* delivered chart */}
+          {/* 1. delivered chart */}
           <div className="chartList">
             <h3 style={{ textAlign: 'center', fontWeight: '500' }}>Delivered Shipments by Priority</h3>
             <ResponsiveContainer height={250}>
@@ -303,7 +297,7 @@ function PriorityDistributionPage({ apiBaseUrl }) {
             </ResponsiveContainer>
           </div>
 
-          {/* delayed chart */}
+          {/* 2. delayed chart */}
           <div className="chartList">
             <h3 style={{ textAlign: 'center', fontWeight: '500' }}>Delayed Shipments by Priority</h3>
             <ResponsiveContainer height={250}>
@@ -320,7 +314,7 @@ function PriorityDistributionPage({ apiBaseUrl }) {
             </ResponsiveContainer>
           </div>
 
-          {/* in transit chart */}
+          {/* 3. in transit chart */}
           <div className="chartList">
             <h3 style={{ textAlign: 'center', fontWeight: '500' }}>In-Transit Shipments by Priority</h3>
             <ResponsiveContainer height={250}>
@@ -337,7 +331,7 @@ function PriorityDistributionPage({ apiBaseUrl }) {
             </ResponsiveContainer>
           </div>
 
-          {/* cancelled chart */}
+          {/* 4. cancelled chart */}
           <div className="chartList">
             <h3 style={{ textAlign: 'center', fontWeight: '500' }}>Cancelled Shipments by Priority</h3>
             <ResponsiveContainer height={250}>

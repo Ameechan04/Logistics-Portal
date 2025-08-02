@@ -1,19 +1,16 @@
-/* In frontend/src/App.css or frontend/src/Navigation.css */
-
 .navigation-list {
   display: flex;
-  flex-wrap: wrap; /* allows items to wrap to the next line on smaller screens */
-  justify-content: center; /* centers the buttons horizontally */
-  gap: 20px; /* adds space between the buttons */
-  list-style: none; /* removes any default list styling (bullets) */
-  padding: 0; /* removes default padding */
-  margin: 0; /* removes default margin */
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-/* Optional: Basic styling for the buttons themselves */
 .navigation-list button {
   padding: 10px 15px;
-  border: 0px solid #faa633;
+  border: none;
   border-radius: 5px;
   background-color: #faa633;
   color: white;
@@ -24,5 +21,15 @@
 }
 
 .navigation-list button:hover {
-  background-color: rgba(250, 166, 51, 0.44);
+  background-color: #f79624;
+}
+
+.navigation-list .active-button {
+  background-color: #0b8043;
+  font-weight: bold;
+  border: 2px solid #0b8043;
+}
+
+.navigation-list .active-button:hover {
+  background-color: #086134;
 }

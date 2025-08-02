@@ -2,14 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell // Import PieChart components
+  PieChart, Pie, Cell
 } from 'recharts';
 import './Styles/Homepage.css';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
 function HomePage() {
-  // State for all dashboard data
   const [dashboardData, setDashboardData] = useState({
     totalShipments: null,
     totalDelayedShipments: null,
@@ -17,26 +16,22 @@ function HomePage() {
     top5ExpensiveShipments: [],
     delayedPast3Months: null,
     ordersPast3Months: null,
-    uniqueCarriers: [], // To populate the carrier filter dropdown
+    uniqueCarriers: [],
   });
 
-  // State for filters and sorting
   const [filters, setFilters] = useState({
     carrier: 'All',
     status: 'All',
     serviceType: 'All',
   });
 
-  // Loading and error state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // data fetching
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
-    // Construct the query string from the current filter state
+    //query string = current filter state
     const queryParams = new URLSearchParams();
     if (filters.carrier !== 'All') queryParams.append('carrier', filters.carrier);
     if (filters.status !== 'All') queryParams.append('status', filters.status);
@@ -44,7 +39,7 @@ function HomePage() {
     const queryString = queryParams.toString();
 
     try {
-      // Use Promise.all to fetch all data concurrently with the new filters
+      // promise.all used to concurrently get all api calls
       const [
         totalShipmentsRes,
         delayedRes,
@@ -60,10 +55,10 @@ function HomePage() {
         axios.get(`${API_BASE_URL}/orders_last_3_months?${queryString}`),
         axios.get(`${API_BASE_URL}/top_5_expensive?${queryString}`),
         axios.get(`${API_BASE_URL}/average_shipment_by_carrier?${queryString}`),
-        axios.get(`${API_BASE_URL}/unique_carriers`) // unique carriers don't need filters
+        axios.get(`${API_BASE_URL}/unique_carriers`)
       ]);
 
-      // Update the dashboard data state with the fetched information
+      // update with fetched info
       setDashboardData({
         totalShipments: totalShipmentsRes.data.totalCount,
         totalDelayedShipments: delayedRes.data.count,
@@ -113,17 +108,17 @@ function HomePage() {
   // preparing data for charts
   const onTimeShipments = (dashboardData.totalShipments || 0) - (dashboardData.totalDelayedShipments || 0);
   const pieChartData = [
-    { name: 'On Time', value: onTimeShipments, color: '#4CAF50' }, // Green
-    { name: 'Delayed', value: dashboardData.totalDelayedShipments || 0, color: '#F44336' }, // Red
+    { name: 'On Time', value: onTimeShipments, color: '#4CAF50' },
+    { name: 'Delayed', value: dashboardData.totalDelayedShipments || 0, color: '#F44336' },
   ];
 
   const onTimeShipments3Months = (dashboardData.ordersPast3Months || 0) - (dashboardData.delayedPast3Months || 0);
   const pieChartData2 = [
-    { name: 'On Time', value: onTimeShipments3Months, color: '#4CAF50' }, // Green
-    { name: 'Delayed', value: dashboardData.delayedPast3Months || 0, color: '#F44336' }, // Red
+    { name: 'On Time', value: onTimeShipments3Months, color: '#4CAF50' },
+    { name: 'Delayed', value: dashboardData.delayedPast3Months || 0, color: '#F44336' },
   ];
 
-  const PIE_COLORS = ['#00850f', '#F44336']; // Green for On Time, Red for Delayed
+  const PIE_COLORS = ['#00850f', '#F44336'];
 
   // skeleton page shows when loading
   if (loading) {
@@ -170,8 +165,7 @@ function HomePage() {
 
   return (
     <div>
-      {/* Filters Section */}
-
+      {/*filters*/}
       <div id="filterControlsHomepage">
          <h1 id="companyDisplayed">
           Showing Data for {filters.carrier === 'All' ? 'All Companies' : filters.carrier}
@@ -186,7 +180,6 @@ function HomePage() {
               onChange={handleFilterChange}
           >
             <option value="All">all carriers</option>
-            {/* dynamically render carrier options */}
             {uniqueCarriers.map((carrierName) => (
               <option key={carrierName} value={carrierName}>{carrierName}</option>
             ))}
@@ -227,7 +220,7 @@ function HomePage() {
           </select>
         </div>
       </div>
-      {/* Overview Metrics */}
+      {/* metrics sect */}
 
       <section id="overviewMetricsSection">
         <div className="metricsList">

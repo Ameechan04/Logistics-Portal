@@ -3,27 +3,21 @@ import axios from 'axios';
 import './Styles/Shipments.css';
 
 
-function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
+function ShipmentsPage({ apiBaseUrl }) {
     // state for shipments table
     const [shipments, setShipments] = useState([]);
     const [totalShipments, setTotalShipments] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(15); // default pagination limit
-    const [goToPageInput, setGoToPageInput] = useState(''); // state for the page jump input
-
-    // state for unique carriers, fetched locally within this component
+    const [itemsPerPage] = useState(15); // default table items limit
+    const [goToPageInput, setGoToPageInput] = useState('');
     const [uniqueCarriers, setUniqueCarriers] = useState([]);
-
-    // state for filters and sorting
     const [filters, setFilters] = useState({
         carrier: '',
         status: '',
         serviceType: '',
-        sortBy: '',    // new state for sorting column
-        sortOrder: ''  // new state for sort order ('asc' or 'desc')
+        sortBy: '',
+        sortOrder: ''
     });
-
-    // loading and error states
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -35,7 +29,7 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
             const params = {
                 page: currentPage,
                 limit: itemsPerPage,
-                ...filters // filters now include sortBy and sortOrder
+                ...filters
             };
             const response = await axios.get(`${apiBaseUrl}/shipments`, { params });
             setShipments(response.data.shipments);
@@ -46,9 +40,9 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
         } finally {
             setLoading(false);
         }
-    }, [currentPage, itemsPerPage, filters, apiBaseUrl]); // dependencies for useCallback
+    }, [currentPage, itemsPerPage, filters, apiBaseUrl]); // for useCallback
 
-    // New useEffect to fetch unique carriers once on component mount
+    //fetch unique carriers once
     useEffect(() => {
         const fetchUniqueCarriers = async () => {
             try {
@@ -56,17 +50,16 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
                 setUniqueCarriers(response.data);
             } catch (err) {
                 console.error("Error fetching unique carriers:", err);
-                // Set an error state or handle this gracefully if necessary
             }
         };
 
         fetchUniqueCarriers();
-    }, [apiBaseUrl]); // Fetch only when apiBaseUrl changes
+    }, [apiBaseUrl]);
 
     // useeffect hook to trigger data fetching for shipments
     useEffect(() => {
         fetchShipments();
-    }, [fetchShipments]); // re-fetch table data when filters/pagination change
+    }, [fetchShipments]);
 
     // filter and sort handlers
     const handleFilterChange = (e) => {
@@ -74,14 +67,12 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
         setFilters(prevFilters => {
             const newFilters = {
                 ...prevFilters,
-                [name]: value === 'All' ? '' : value // clear filter/sort if 'All' is selected
+                [name]: value === 'All' ? '' : value
             };
 
-            // if 'sortBy' is being set and 'sortOrder' is not already defined, default to 'desc'
             if (name === 'sortBy' && value !== '' && newFilters.sortOrder === '') {
                 newFilters.sortOrder = 'desc';
             }
-            // if 'sortBy' is being cleared, also clear 'sortOrder'
             if (name === 'sortBy' && value === '') {
                 newFilters.sortOrder = '';
             }
@@ -91,14 +82,12 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
         setCurrentPage(1); // reset to first page on filter/sort change
     };
 
-    // calculate total pages (must be before pagination logic that uses it)
     const totalPages = Math.ceil(totalShipments / itemsPerPage);
 
-    // pagination handlers
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
-            setGoToPageInput(''); // clear input after successful navigation
+            setGoToPageInput('');
         }
     };
 
@@ -176,7 +165,7 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
 
     if (loading) {
         return (
-            <div className="shipments-container p-4">
+            <div>
                 <div id="filterControls">
                     <p id="loadingText">Loading Shipments...</p>
                 </div>
@@ -193,7 +182,7 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
         <div>
             {/* filters and sorting section */}
             <div id="filterControls">
-                    {/* carrier filter */}
+                    {/* 1. carrier filter */}
                     <div>
                         <label htmlFor="carrierFilter">carrier:</label>
                         <select
@@ -210,7 +199,7 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
                         </select>
                     </div>
 
-                    {/* status filter */}
+                    {/* 2. status filter */}
                     <div>
                         <label htmlFor="statusFilter">status:</label>
                         <select
@@ -228,7 +217,7 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
                         </select>
                     </div>
 
-                    {/* service type filter */}
+                    {/* 3. service type filter */}
                     <div>
                         <label htmlFor="serviceTypeFilter">service type:</label>
                         <select
@@ -244,7 +233,7 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
                         </select>
                     </div>
 
-                    {/* sort by column */}
+                    {/* sort by options*/}
                     <div>
                         <label htmlFor="sortBy">sort by:</label>
                         <select
@@ -341,9 +330,9 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
                             <span>{totalShipments}</span> results
                         </div>
 
-                        {/* pagination buttons */}
+                        {/* buttons for changing current page*/}
                         <div id="pageButtons">
-                            {/* previous button */}
+                            {/* previous button (lhs) */}
                             <button
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
@@ -369,7 +358,7 @@ function ShipmentsPage({ apiBaseUrl }) { // removed uniqueCarriers from props
                                 )
                             ))}
 
-                            {/* next button */}
+                            {/* next button (rhs)*/}
                             <button
                                 className="arrowButtons"
                                 onClick={() => handlePageChange(currentPage + 1)}

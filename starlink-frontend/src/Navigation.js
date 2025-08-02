@@ -2,8 +2,7 @@ import React from 'react';
 import './Styles/Navigation.css';
 
 // File for handling the navigation bar
-function Navigation({ setCurrentPage }) {
-    // The page identifiers here must exactly match the case statements in App.js.
+function Navigation({ setCurrentPage, currentPage }) {
     const navItems = [
         { name: 'Overview', page: 'homepage' },
         { name: 'Shipments Table', page: 'shipments' },
@@ -18,6 +17,7 @@ function Navigation({ setCurrentPage }) {
                     <li key={item.page}>
                         <button
                             onClick={() => setCurrentPage(item.page)}
+                            className={item.page === currentPage ? 'active-button' : ''}
                         >
                             {item.name}
                         </button>

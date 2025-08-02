@@ -213,7 +213,6 @@ function ShipmentsPage({ apiBaseUrl }) {
                             <option value="In Transit">in transit</option>
                             <option value="Delayed">delayed</option>
                             <option value="Cancelled">cancelled</option>
-                            <option value="Pending">pending</option>
                         </select>
                     </div>
 
@@ -229,7 +228,8 @@ function ShipmentsPage({ apiBaseUrl }) {
                             <option value="All">all service types</option>
                             <option value="Standard">standard</option>
                             <option value="Express">express</option>
-                            <option value="Economy">economy</option>
+                            <option value="Same Day">same day</option>
+                            <option value="Overnight">overnight</option>
                         </select>
                     </div>
 

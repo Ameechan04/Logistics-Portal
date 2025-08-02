@@ -102,7 +102,6 @@ function WeightCostPage({ apiBaseUrl }) {
 
     return lineData;
   };
-  // --- End of Linear Regression Calculation ---
 
   const regressionLineData = calculateLinearRegressionLine(data);
 
@@ -166,14 +165,14 @@ function WeightCostPage({ apiBaseUrl }) {
               }}
             />
             <Legend />
-            <Scatter name="Express Shipments" data={data} fill="#3b82f6" />
+            <Scatter name="Express Shipments" data={data} fill="#e55c52" />
             {regressionLineData.length > 0 && (
               <Line
                 dataKey="CostUSD"
                 data={regressionLineData}
                 type="linear"
-                stroke="#0000FF"
-                strokeWidth={3}
+                stroke="#24ea0e"
+                strokeWidth={5}
                 dot={false}
                 activeDot={false}
                 name="Regression Line"

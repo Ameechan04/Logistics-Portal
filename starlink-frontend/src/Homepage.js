@@ -35,7 +35,7 @@ function HomePage() {
     const queryParams = new URLSearchParams();
     if (filters.carrier !== 'All') queryParams.append('carrier', filters.carrier);
     if (filters.status !== 'All') queryParams.append('status', filters.status);
-    if (filters.serviceType !== 'All') queryParams.append('service_type', filters.serviceType);
+    if (filters.serviceType !== 'All') queryParams.append('serviceType', filters.serviceType);
     const queryString = queryParams.toString();
 
     try {
@@ -200,7 +200,6 @@ function HomePage() {
             <option value="In Transit">in transit</option>
             <option value="Delayed">delayed</option>
             <option value="Cancelled">cancelled</option>
-            <option value="Pending">pending</option>
           </select>
         </div>
 
@@ -216,7 +215,8 @@ function HomePage() {
             <option value="All">all service types</option>
             <option value="Standard">standard</option>
             <option value="Express">express</option>
-            <option value="Economy">economy</option>
+            <option value="Same Day">same day</option>
+            <option value="Overnight">overnight</option>
           </select>
         </div>
       </div>

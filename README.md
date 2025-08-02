@@ -13,3 +13,7 @@ A cloud-native full stack logistics data portal featuring a React frontend, API-
 Once the front-end is running it should open `http://localhost:3000/` (or 3001 if port 3000 is in use) in a new browser tab.
 
 If it does not paste `http://localhost:3000/` or `http://localhost:3001/` into your browser of choice.
+
+## Video Demo
+[![Vimeo Project Demo](https://i.vimeocdn.com/video/1106644498.webp)](https://vimeo.com/1106644498)
+
